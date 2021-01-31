@@ -2,10 +2,13 @@
 
 # Import and initialize the pygame library
 import pygame
+# SRCALPHA
+from pygame.locals import *
+
 from panza import Panza
 from collections import defaultdict
 
-def initPanzas (windowSize: tuple) -> defaultdict(dict):
+def initPanzas (panzaSizeInPixels: int, windowSize: tuple) -> defaultdict(dict):
   # Initialize all joysticks connected right now
   pygame.joystick.init()
 
@@ -19,7 +22,7 @@ def initPanzas (windowSize: tuple) -> defaultdict(dict):
     print ("Found joystick {}".format(joystick.get_instance_id ()))
     # we have to hold the created joystick instance here alive,
     # otherwise no events are sent
-    panzas [joystick.get_instance_id ()] = Panza (joystick, windowSize, x)
+    panzas [joystick.get_instance_id ()] = Panza (joystick, panzaSizeInPixels, windowSize, x)
 
   return panzas
 
@@ -27,17 +30,18 @@ def initPanzas (windowSize: tuple) -> defaultdict(dict):
 def main () -> None:
   pygame.init()
 
-  windowSize = (500,500)
+  windowSize = (1280,720)
+  panzaSizeInPixels = 200
 
   # Initialize all joysticks connected right now
   # and remember instance id as dictionary key
-  panzas = initPanzas (windowSize)
+  panzas = initPanzas (panzaSizeInPixels, windowSize)
   if len (panzas) < 2:
     pygame.quit ()
     return
 
   # Set up the drawing window
-  screen = pygame.display.set_mode(size=windowSize)
+  screen = pygame.display.set_mode(size=windowSize,flags=SRCALPHA)
 
   # Run until the user asks to quit
   running = True
@@ -52,10 +56,11 @@ def main () -> None:
         print ("id {} fire button".format (event.instance_id)) 
 
     # Fill the background with white
-    screen.fill((255, 255, 255))
+    screen.fill((255, 255, 255, 255))
 
     # Draw a solid blue circle in the center
-    pygame.draw.circle(surface=screen, color=(0, 0, 255), center=(250,250), radius=75)
+    for index in panzas:
+      panzas[index].render (screen)
 
     # Flip the display
     pygame.display.flip()
