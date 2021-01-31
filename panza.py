@@ -45,7 +45,7 @@ class Panza:
      With 2) inserted in to 1) we get
      y = D / sqrt (C^2 + 1)
 
-     With known y we can solve a when inserted into 1) or 2)
+     With known y we can solve x when inserted into 1) or 2)
   '''
   def __initPanzaSize (self, sizeInPixels: int, ratio: tuple) -> tuple:
     D = sizeInPixels
