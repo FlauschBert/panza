@@ -1,13 +1,12 @@
-from pygame import math, display, Rect, Color
+from pygame import math, Rect, Color
 
 class Panza:
-  def __initPosition (self, playerId: int) -> math.Vector2:
-    size = display.get_window_size ()
-    rect = Rect (0, 0, size[0]/2, size[1]/2)
+  def __initPosition (self, windowSize: tuple, playerId: int) -> math.Vector2:
+    rect = Rect (0, 0, windowSize [0]/2, windowSize [1]/2)
     if (0 == playerId):
       return math.Vector2 (rect.center)
     else:
-      rect.move_ip (size [0]/2, size [1]/2)
+      rect.move_ip (windowSize [0]/2, windowSize [1]/2)
       return math.Vector2 (rect.center)
 
   def __initColor (self, playerId: int) -> Color:
@@ -25,19 +24,20 @@ class Panza:
   def __initGunDirection (self, playerId: int) -> math.Vector2:
     return self.__initTankDirection (playerId)
 
-  def __init__(self, joystick, playerId: int):
+  def __init__(self, joystick, windowSize: tuple, playerId: int):
     # Testing has no joysticks
     if None != joystick:
+      joystick.init ()
+      self.joystickInstanceId = joystick.get_instance_id ()
       self.joystick = joystick
-      self.joystick.init ()
 
-    self.position = self.__initPosition (playerId)
+    self.position = self.__initPosition (windowSize, playerId)
     self.color = self.__initColor (playerId)
     self.tankDirection = self.__initTankDirection (playerId)
     self.gunDirection = self.__initGunDirection (playerId)
 
   def update (self, axis: int, value: float):
-    print ("panza {}".format (self.joystick.get_instance_id ()))
+    print ("panza {}".format (self.joystickInstanceId))
     if axis == 0 or axis == 1:
       print ("tank {}".format (value))
     elif axis == 3 or axis == 4:

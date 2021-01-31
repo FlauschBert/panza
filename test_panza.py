@@ -2,12 +2,13 @@ import pygame
 from panza import Panza
 from collections import defaultdict
 
-def test (playerCount: int) -> None:
+def test (playerCount: int, windowSize: tuple) -> None:
   panzas = defaultdict(dict)
   for x in range (playerCount):
-    panzas [x] = Panza (None, x)
+    panzas [x] = Panza (None, windowSize, x)
 
 pygame.init()
-pygame.display.set_mode(size=[500, 500])
-test (2)
+windowSize = (500,500)
+pygame.display.set_mode(windowSize)
+test (2, windowSize)
 pygame.quit()

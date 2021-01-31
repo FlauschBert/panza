@@ -5,7 +5,7 @@ import pygame
 from panza import Panza
 from collections import defaultdict
 
-def initPanzas () -> defaultdict(dict):
+def initPanzas (windowSize: tuple) -> defaultdict(dict):
   # Initialize all joysticks connected right now
   pygame.joystick.init()
 
@@ -19,7 +19,7 @@ def initPanzas () -> defaultdict(dict):
     print ("Found joystick {}".format(joystick.get_instance_id ()))
     # we have to hold the created joystick instance here alive,
     # otherwise no events are sent
-    panzas [joystick.get_instance_id ()] = Panza (joystick, x)
+    panzas [joystick.get_instance_id ()] = Panza (joystick, windowSize, x)
 
   return panzas
 
@@ -27,15 +27,17 @@ def initPanzas () -> defaultdict(dict):
 def main () -> None:
   pygame.init()
 
+  windowSize = (500,500)
+
   # Initialize all joysticks connected right now
   # and remember instance id as dictionary key
-  panzas = initPanzas ()
+  panzas = initPanzas (windowSize)
   if len (panzas) < 2:
     pygame.quit ()
     return
 
   # Set up the drawing window
-  screen = pygame.display.set_mode(size=[500, 500])
+  screen = pygame.display.set_mode(size=windowSize)
 
   # Run until the user asks to quit
   running = True
