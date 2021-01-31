@@ -1,7 +1,8 @@
 # Simple pygame program
 
 # Import and initialize the pygame library
-import pygame, panza
+import pygame
+from panza import Panza
 from collections import defaultdict
 
 def initPanzas () -> defaultdict(dict):
@@ -18,7 +19,7 @@ def initPanzas () -> defaultdict(dict):
     print ("Found joystick {}".format(joystick.get_instance_id ()))
     # we have to hold the created joystick instance here alive,
     # otherwise no events are sent
-    panzas [joystick.get_instance_id ()] = panza.Panza (joystick)
+    panzas [joystick.get_instance_id ()] = Panza (joystick, x)
 
   return panzas
 
