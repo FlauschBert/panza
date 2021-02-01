@@ -1,4 +1,4 @@
-from pygame import math, joystick, Rect, Color, Surface, draw
+from pygame import math, joystick, Rect, Color, Surface, draw, transform
 # SRCALPHA
 from pygame.locals import *
 from math import sqrt
@@ -46,9 +46,7 @@ class Panza:
        With 2) inserted in to 1) we get
        y = D / sqrt (C^2 + 1)
   
-       With known y we can solve x when inserted into 1) or 2)
-    '''
-
+       With known y we can solve x when inserted into 1) or 2)'''
     def __initPanzaSize(self, sizeInPixels: int, ratio: float) -> tuple:
         D = sizeInPixels
         C = ratio
@@ -72,34 +70,49 @@ class Panza:
         self.gunDirection = self.__initGunDirection(playerId)
         self.size = self.__initPanzaSize(sizeInPixels, RATIO)
 
-        self.surface = Surface(size=(sizeInPixels, sizeInPixels), flags=SRCALPHA)
-        self.__updateSurface(self.surface, self.color)
+        self.tankSurface = Surface(size=(sizeInPixels, sizeInPixels), flags=SRCALPHA)
+        self.__updateTankSurface(self.tankSurface, self.color, self.tankDirection)
 
     # UPDATES
 
-    def __updateSurface(self, surface: Surface, color: Color):
+    def __updateTankSurface(self, surface: Surface, color: Color, direction: math.Vector2):
         surface.fill((0, 0, 0, 0))
 
         # rect inside surface
-        surfaceSize = surface.get_rect()
-        rect = Rect(0, 0, self.size[0], self.size[1])
-        diff = math.Vector2(surfaceSize.center) - math.Vector2(rect.center)
-        rect.move_ip(diff)
+        surfaceSize = surface.get_size()
+        surfaceRect = Rect (0, 0, surfaceSize[0], surfaceSize[1])
+        tankRect = Rect(0, 0, self.size[0], self.size[1])
+        diff = math.Vector2(surfaceRect.center) - math.Vector2(tankRect.center)
+        tankRect.move_ip(diff)
 
-        # TODO: add rotation
+        temp = surface.copy()
+        draw.rect(temp, color, tankRect)
 
-        draw.rect(surface, color, rect)
+        # apply tank direction to surface
+        degree = math.Vector2 (0, -1).angle_to(direction)
+        temp = transform.rotate(temp, degree)
+
+        # temp was enlarged by rotate (wtf):
+        # calculate diff so that temp surface is positioned outside
+        # of the destination surface below
+        tempRectSize = temp.get_size()
+        diff = math.Vector2(tempRectSize) - math.Vector2(surfaceSize)
+
+        # copy back wanted portion from rotation
+        surface.blit (temp, -diff/2)
 
     def update(self, axis: int, value: float):
-        print("panza {}".format(self.joystickInstanceId))
         if axis == 0 or axis == 1:
-            print("tank {}".format(value))
+            direction = self.tankDirection
+            direction [axis] = value
+            self.tankDirection = direction.normalize ()
+            self.__updateTankSurface(self.tankSurface, self.color, self.tankDirection)
         elif axis == 3 or axis == 4:
             print("gun {}".format(value))
 
     # DRAWING
 
     def render(self, screen: Surface):
-        offset = self.surface.get_rect().center
+        offset = self.tankSurface.get_rect().center
         position = self.position - math.Vector2(offset)
-        screen.blit(self.surface, position)
+        screen.blit(self.tankSurface, position)
