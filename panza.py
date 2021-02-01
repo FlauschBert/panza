@@ -46,7 +46,8 @@ class Panza:
        With 2) inserted in to 1) we get
        y = D / sqrt (C^2 + 1)
   
-       With known y we can solve x when inserted into 1) or 2)'''
+       With known y we can solve x when inserted into 1) or 2)
+    '''
     def __initPanzaSize(self, sizeInPixels: int, ratio: float) -> tuple:
         D = sizeInPixels
         C = ratio
@@ -89,7 +90,7 @@ class Panza:
         draw.rect(temp, color, tankRect)
 
         # apply tank direction to surface
-        degree = math.Vector2 (0, -1).angle_to(direction)
+        degree = -math.Vector2 (0, 1).angle_to(direction)
         temp = transform.rotate(temp, degree)
 
         # temp was enlarged by rotate (wtf):
