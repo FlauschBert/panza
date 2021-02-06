@@ -58,7 +58,7 @@ class Panza:
         else:
             return (x, y)
 
-    def __init__(self, joystick: joystick.Joystick, sizeInPixels: int, windowSize: tuple, playerId: int):
+    def __init__(self, joystick: joystick.Joystick or None, sizeInPixels: int, windowSize: tuple, playerId: int):
         # Testing has no joysticks
         if joystick is not None:
             joystick.init()
@@ -81,7 +81,7 @@ class Panza:
 
         # rect inside surface
         surfaceSize = surface.get_size()
-        surfaceRect = Rect (0, 0, surfaceSize[0], surfaceSize[1])
+        surfaceRect = Rect(0, 0, surfaceSize[0], surfaceSize[1])
         tankRect = Rect(0, 0, self.size[0], self.size[1])
         diff = math.Vector2(surfaceRect.center) - math.Vector2(tankRect.center)
         tankRect.move_ip(diff)
@@ -90,7 +90,7 @@ class Panza:
         draw.rect(temp, color, tankRect)
 
         # apply tank direction to surface
-        degree = -math.Vector2 (0, 1).angle_to(direction)
+        degree = -math.Vector2(0, 1).angle_to(direction)
         temp = transform.rotate(temp, degree)
 
         # temp was enlarged by rotate (wtf):
@@ -100,14 +100,14 @@ class Panza:
         diff = math.Vector2(tempRectSize) - math.Vector2(surfaceSize)
 
         # copy back wanted portion from rotation
-        surface.blit (temp, -diff/2)
+        surface.blit(temp, -diff/2)
 
     def update(self, axis: int, value: float):
         if axis == 0 or axis == 1:
             direction = self.tankDirection
-            direction [axis] = value
-            self.tankDirection = direction.normalize ()
-            self.__updateTankSurface(self.tankSurface, self.color, self.tankDirection)
+            direction = math.Vector2(self.joystick.get_axis(0), self.joystick.get_axis(1))
+            direction.normalize_ip()
+            self.__updateTankSurface(self.tankSurface, self.color, direction)
         elif axis == 3 or axis == 4:
             print("gun {}".format(value))
 
