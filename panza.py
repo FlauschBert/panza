@@ -103,6 +103,10 @@ class Panza:
         # copy back wanted portion from rotation
         surface.blit(temp, -diff/2)
 
+    ''' update tank direction and position
+               gun direction and position
+               dt is ticks since last update in milliseconds
+    '''
     def update(self, dt: int) -> None:
         # TANK
         stickDirection = math.Vector2(self.joystick.get_axis(0), self.joystick.get_axis(1))
