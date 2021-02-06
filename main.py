@@ -2,6 +2,7 @@
 
 # Import and initialize the pygame library
 import pygame
+from pygame import time
 # SRCALPHA
 from pygame.locals import *
 
@@ -46,18 +47,22 @@ def main() -> None:
 
     # Run until the user asks to quit
     running = True
+    ticks = time.get_ticks()
     while running:
         # Did the user click the window close button?
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.JOYAXISMOTION:
-                panzas[event.instance_id].update(axis=event.axis, value=event.value)
             elif event.type == pygame.JOYBUTTONUP:
                 print("id {} fire button".format(event.instance_id))
 
-                # Fill the background with white
+        # Fill the background with white
         screen.fill((255, 255, 255, 255))
+
+        # Update speed and direction
+        for index in panzas:
+            panzas[index].update(time.get_ticks() - ticks)
+        ticks = time.get_ticks()
 
         # Draw a solid blue circle in the center
         for index in panzas:

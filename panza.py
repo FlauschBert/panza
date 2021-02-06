@@ -67,9 +67,10 @@ class Panza:
 
         self.position = self.__initPosition(windowSize, playerId)
         self.color = self.__initColor(playerId)
+        self.size = self.__initPanzaSize(sizeInPixels, RATIO)
+
         self.tankDirection = self.__initTankDirection(playerId)
         self.gunDirection = self.__initGunDirection(playerId)
-        self.size = self.__initPanzaSize(sizeInPixels, RATIO)
 
         self.tankSurface = Surface(size=(sizeInPixels, sizeInPixels), flags=SRCALPHA)
         self.__updateTankSurface(self.tankSurface, self.color, self.tankDirection)
@@ -102,14 +103,34 @@ class Panza:
         # copy back wanted portion from rotation
         surface.blit(temp, -diff/2)
 
-    def update(self, axis: int, value: float):
-        if axis == 0 or axis == 1:
-            direction = self.tankDirection
-            direction = math.Vector2(self.joystick.get_axis(0), self.joystick.get_axis(1))
-            direction.normalize_ip()
-            self.__updateTankSurface(self.tankSurface, self.color, direction)
-        elif axis == 3 or axis == 4:
-            print("gun {}".format(value))
+    def update(self, dt: int) -> None:
+        # TANK
+        stickDirection = math.Vector2(self.joystick.get_axis(0), self.joystick.get_axis(1))
+        if stickDirection.length() < 0.08:
+            return
+
+        # MOVEMENT
+        # force from stick
+        force = stickDirection.length()
+        # add some damping
+        force *= 0.8
+
+        directionNormalized = stickDirection.normalize()
+
+        # forward 0 - 1 (self.tankDirection is also normalized)
+        forward = self.tankDirection.dot(directionNormalized)
+
+        self.position += directionNormalized * forward * force * dt
+
+        # ROTATION
+        rotationDirection = directionNormalized - self.tankDirection
+        self.tankDirection += rotationDirection * dt
+        self.tankDirection.normalize_ip()
+
+        self.__updateTankSurface(self.tankSurface, self.color, stickDirection)
+
+        # GUN
+        #gunDirection = math.Vector2(self.joystick.get_axis(3), self.joystick.get_axis(4))
 
     # DRAWING
 
