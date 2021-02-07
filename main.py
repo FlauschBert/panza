@@ -60,7 +60,7 @@ def main() -> None:
 
         # Update speed and direction
         for index in panzas:
-            panzas[index].update(time.get_ticks() - ticks)
+            panzas[index].update(time.get_ticks() - ticks, windowSize)
         ticks = time.get_ticks()
 
         # Draw a solid blue circle in the center

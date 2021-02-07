@@ -105,9 +105,9 @@ class Panza:
 
     ''' update tank direction and position
                gun direction and position
-               dt is ticks since last update in milliseconds
+               dt is ticks since last update (number of milliseconds)
     '''
-    def update(self, dt: int) -> None:
+    def update(self, dt: int, windowSize: tuple) -> None:
         # TANK
         stickDirection = math.Vector2(self.joystick.get_axis(0), self.joystick.get_axis(1))
         if stickDirection.length() < 0.08:
@@ -124,7 +124,10 @@ class Panza:
         # forward 0 - 1 (self.tankDirection is also normalized)
         forward = self.tankDirection.dot(directionNormalized)
 
-        self.position += directionNormalized * forward * force * dt
+        # we do not have dpi here: use window size as speed orientation
+        speed = sqrt (windowSize[0] * windowSize[1])
+
+        self.position += directionNormalized * forward * force * speed * (dt / 1000)
 
         # ROTATION
         rotationDirection = directionNormalized - self.tankDirection
