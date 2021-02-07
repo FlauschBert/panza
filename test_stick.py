@@ -35,7 +35,7 @@ def main() -> bool:
         return False
     
     window_size = (1280, 720)
-    screen = pygame.display.set_mode(size=window_size)
+    window = pygame.display.set_mode(size=window_size)
 
     # Run until the user asks to quit
     running = True
@@ -49,9 +49,9 @@ def main() -> bool:
                 direction = get_direction(joystick_)
 
         # Fill the background with white
-        screen.fill((255, 255, 255, 255))
+        window.fill((255, 255, 255, 255))
 
-        render(direction, window_size, screen)
+        render(direction, window_size, window)
 
         # Flip the display
         pygame.display.flip()
